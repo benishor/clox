@@ -10,7 +10,7 @@ uint32_t simpleInstruction(const char *name, uint32_t offset) {
 }
 
 void printValue(Value value) {
-    printf("%g", value);
+    printf("%g", AS_NUMBER(value));
 }
 
 uint32_t constantInstruction(const char *name, Chunk *chunk, uint32_t offset) {
