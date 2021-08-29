@@ -54,6 +54,8 @@ static void binary();
 
 static void number();
 
+static void literal();
+
 ParseRule rules[] = {
         [TOKEN_LEFT_PAREN] = {grouping, NULL, PREC_NONE},
         [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
@@ -80,17 +82,17 @@ ParseRule rules[] = {
         [TOKEN_AND] = {NULL, NULL, PREC_NONE},
         [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
         [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
-        [TOKEN_FALSE] = {NULL, NULL, PREC_NONE},
+        [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
         [TOKEN_FOR] = {NULL, NULL, PREC_NONE},
         [TOKEN_FUN] = {NULL, NULL, PREC_NONE},
         [TOKEN_IF] = {NULL, NULL, PREC_NONE},
-        [TOKEN_NIL] = {NULL, NULL, PREC_NONE},
+        [TOKEN_NIL] = {literal, NULL, PREC_NONE},
         [TOKEN_OR] = {NULL, NULL, PREC_NONE},
         [TOKEN_PRINT] = {NULL, NULL, PREC_NONE},
         [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
         [TOKEN_SUPER] = {NULL, NULL, PREC_NONE},
         [TOKEN_THIS] = {NULL, NULL, PREC_NONE},
-        [TOKEN_TRUE] = {NULL, NULL, PREC_NONE},
+        [TOKEN_TRUE] = {literal, NULL, PREC_NONE},
         [TOKEN_VAR] = {NULL, NULL, PREC_NONE},
         [TOKEN_WHILE] = {NULL, NULL, PREC_NONE},
         [TOKEN_ERROR] = {NULL, NULL, PREC_NONE},
@@ -196,6 +198,22 @@ static void grouping() {
     consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression");
 }
 
+static void literal() {
+    switch (parser.previous.type) {
+        case TOKEN_TRUE:
+            emitByte(OP_TRUE);
+            break;
+        case TOKEN_FALSE:
+            emitByte(OP_FALSE);
+            break;
+        case TOKEN_NIL:
+            emitByte(OP_NIL);
+            break;
+        default:
+            return;
+    }
+}
+
 static void parsePrecedence(Precedence precedence) {
     advance();
     ParseFn prefixRule = getRule(parser.previous.type)->prefix;
@@ -268,19 +286,6 @@ bool compile(const char *source, Chunk *chunk) {
     expression();
     consume(TOKEN_EOF, "Expected end of expression.");
     endCompiler();
-    return !parser.hadError;
 
-//    int line = -1;
-//    for (;;) {
-//        Token token = scanToken();
-//        if (token.line != line) {
-//            printf("%4d ", token.line);
-//            line = token.line;
-//        } else {
-//            printf("   | ");
-//        }
-//        printf("%2d '%.*s'\n", token.type, token.length, token.start);
-//        if (token.type == TOKEN_EOF) break;
-//    }
-//    return true;
+    return !parser.hadError;
 }

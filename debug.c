@@ -10,7 +10,17 @@ uint32_t simpleInstruction(const char *name, uint32_t offset) {
 }
 
 void printValue(Value value) {
-    printf("%g", AS_NUMBER(value));
+    switch (value.type) {
+        case VAL_BOOL:
+            printf(AS_BOOL(value) ? "true" : "false");
+            break;
+        case VAL_NIL:
+            printf("nil");
+            break;
+        case VAL_NUMBER:
+            printf("%g", AS_NUMBER(value));
+            break;
+    }
 }
 
 uint32_t constantInstruction(const char *name, Chunk *chunk, uint32_t offset) {
@@ -47,6 +57,12 @@ uint32_t disassembleInstruction(Chunk *c, uint32_t offset) {
             return simpleInstruction("OP_DIVIDE", offset);
         case OP_CONSTANT:
             return constantInstruction("OP_CONSTANT", c, offset);
+        case OP_NIL:
+            return simpleInstruction("OP_NIL", offset);
+        case OP_TRUE:
+            return simpleInstruction("OP_TRUE", offset);
+        case OP_FALSE:
+            return simpleInstruction("OP_FALSE", offset);
         default:
             printf("Unknown opcode %d\n", instruction);
             return offset + 1;
