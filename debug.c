@@ -47,8 +47,6 @@ uint32_t disassembleInstruction(Chunk *c, uint32_t offset) {
 
     uint8_t instruction = c->code[offset];
     switch (instruction) {
-        case OP_RETURN:
-            return simpleInstruction("OP_RETURN", offset);
         case OP_NEGATE:
             return simpleInstruction("OP_NEGATE", offset);
         case OP_ADD:
@@ -75,6 +73,10 @@ uint32_t disassembleInstruction(Chunk *c, uint32_t offset) {
             return simpleInstruction("OP_GREATER", offset);
         case OP_LESS:
             return simpleInstruction("OP_LESS", offset);
+        case OP_PRINT:
+            return simpleInstruction("OP_PRINT", offset);
+        case OP_RETURN:
+            return simpleInstruction("OP_RETURN", offset);
         default:
             printf("Unknown opcode %d\n", instruction);
             return offset + 1;
