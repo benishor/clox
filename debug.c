@@ -10,6 +10,12 @@ uint32_t simpleInstruction(const char *name, uint32_t offset) {
     return offset + 1;
 }
 
+static int byteInstruction(const char *name, Chunk *chunk, int offset) {
+    uint8_t slot = chunk->code[offset + 1];
+    printf("%-16s %4d\n", name, slot);
+    return offset + 2;
+}
+
 void printValue(Value value) {
     switch (value.type) {
         case VAL_BOOL:
@@ -83,6 +89,10 @@ uint32_t disassembleInstruction(Chunk *chunk, uint32_t offset) {
             return constantInstruction("OP_GET_GLOBAL", chunk, offset);
         case OP_SET_GLOBAL:
             return constantInstruction("OP_SET_GLOBAL", chunk, offset);
+        case OP_GET_LOCAL:
+            return byteInstruction("OP_GET_LOCAL", chunk, offset);
+        case OP_SET_LOCAL:
+            return byteInstruction("OP_SET_LOCAL", chunk, offset);
         case OP_RETURN:
             return simpleInstruction("OP_RETURN", offset);
         default:
@@ -99,4 +109,3 @@ void disassembleChunk(Chunk *c, const char *name) {
         offset = disassembleInstruction(c, offset);
     }
 }
-
