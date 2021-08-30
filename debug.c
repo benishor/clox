@@ -36,16 +36,16 @@ uint32_t constantInstruction(const char *name, Chunk *chunk, uint32_t offset) {
 }
 
 
-uint32_t disassembleInstruction(Chunk *c, uint32_t offset) {
+uint32_t disassembleInstruction(Chunk *chunk, uint32_t offset) {
     printf("%04d ", offset);
 
-    if (offset > 0 && c->lines[offset] == c->lines[offset - 1]) {
+    if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1]) {
         printf("   | ");
     } else {
-        printf("%4d ", c->lines[offset]);
+        printf("%4d ", chunk->lines[offset]);
     }
 
-    uint8_t instruction = c->code[offset];
+    uint8_t instruction = chunk->code[offset];
     switch (instruction) {
         case OP_NEGATE:
             return simpleInstruction("OP_NEGATE", offset);
@@ -60,7 +60,7 @@ uint32_t disassembleInstruction(Chunk *c, uint32_t offset) {
         case OP_NOT:
             return simpleInstruction("OP_NOT", offset);
         case OP_CONSTANT:
-            return constantInstruction("OP_CONSTANT", c, offset);
+            return constantInstruction("OP_CONSTANT", chunk, offset);
         case OP_NIL:
             return simpleInstruction("OP_NIL", offset);
         case OP_TRUE:
@@ -75,6 +75,14 @@ uint32_t disassembleInstruction(Chunk *c, uint32_t offset) {
             return simpleInstruction("OP_LESS", offset);
         case OP_PRINT:
             return simpleInstruction("OP_PRINT", offset);
+        case OP_POP:
+            return simpleInstruction("OP_POP", offset);
+        case OP_DEFINE_GLOBAL:
+            return constantInstruction("OP_DEFINE_GLOBAL", chunk, offset);
+        case OP_GET_GLOBAL:
+            return constantInstruction("OP_GET_GLOBAL", chunk, offset);
+        case OP_SET_GLOBAL:
+            return constantInstruction("OP_SET_GLOBAL", chunk, offset);
         case OP_RETURN:
             return simpleInstruction("OP_RETURN", offset);
         default:

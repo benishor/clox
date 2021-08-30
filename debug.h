@@ -7,7 +7,7 @@
 
 #include "chunk.h"
 
-uint32_t disassembleInstruction(Chunk *c, uint32_t offset);
+uint32_t disassembleInstruction(Chunk *chunk, uint32_t offset);
 void disassembleChunk(Chunk* c, const char* name);
 void printValue(Value value);
 
