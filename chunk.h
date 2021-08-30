@@ -37,7 +37,7 @@ typedef struct {
 void initChunk(Chunk *c);
 void freeChunk(Chunk *c);
 void writeChunk(Chunk *c, uint8_t byte, uint32_t line);
-uint32_t addConstant(Chunk* chunk, Value value);
+uint32_t addConstant(Chunk *chunk, Value value);
 
 
 #endif //CLOX_CHUNK_H

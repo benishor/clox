@@ -2,6 +2,7 @@
 // Created by Adrian on 28.08.2021.
 //
 #include "debug.h"
+#include "object.h"
 #include <stdio.h>
 
 uint32_t simpleInstruction(const char *name, uint32_t offset) {
@@ -19,6 +20,9 @@ void printValue(Value value) {
             break;
         case VAL_NUMBER:
             printf("%g", AS_NUMBER(value));
+            break;
+        case VAL_OBJ:
+            printObject(value);
             break;
     }
 }
