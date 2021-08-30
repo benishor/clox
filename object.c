@@ -6,18 +6,23 @@
 #include "memory.h"
 #include <string.h>
 #include <stdio.h>
+#include "vm.h"
 
 #define ALLOCATE_OBJ(type, objectType) \
     (type*)allocateObject(sizeof(type), objectType)
 
 static Obj *allocateObject(size_t size, ObjType type) {
-    Obj * object = (Obj *) reallocate(NULL, 0, size);
+    Obj *object = (Obj *) reallocate(NULL, 0, size);
     object->type = type;
+
+    object->next = vm.objects;
+    vm.objects = object;
+
     return object;
 }
 
 static ObjString *allocateString(char *heapChars, int length) {
-    ObjString * string = ALLOCATE_OBJ(ObjString, OBJ_STRING);
+    ObjString *string = ALLOCATE_OBJ(ObjString, OBJ_STRING);
     string->length = length;
     string->chars = heapChars;
     return string;
