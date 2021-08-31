@@ -60,24 +60,18 @@ Compiler *current = NULL;
 Chunk *compilingChunk;
 
 
+static void parsePrecedence(Precedence precedence);
 static void grouping(bool canAssign);
-
 static void unary(bool canAssign);
-
 static void binary(bool canAssign);
-
 static void number(bool canAssign);
-
 static void literal(bool canAssign);
-
 static void string(bool canAssign);
-
+static void and_(bool canAssign);
+static void or_(bool canAssign);
 static void expression();
-
 static void statement();
-
 static void declaration();
-
 static void variable(bool canAssign);
 
 ParseRule rules[] = {
@@ -103,7 +97,7 @@ ParseRule rules[] = {
         [TOKEN_IDENTIFIER] = {variable, NULL, PREC_NONE},
         [TOKEN_STRING] = {string, NULL, PREC_NONE},
         [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
-        [TOKEN_AND] = {NULL, NULL, PREC_NONE},
+        [TOKEN_AND] = {NULL, and_, PREC_AND},
         [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
         [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
         [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
@@ -111,7 +105,7 @@ ParseRule rules[] = {
         [TOKEN_FUN] = {NULL, NULL, PREC_NONE},
         [TOKEN_IF] = {NULL, NULL, PREC_NONE},
         [TOKEN_NIL] = {literal, NULL, PREC_NONE},
-        [TOKEN_OR] = {NULL, NULL, PREC_NONE},
+        [TOKEN_OR] = {NULL, or_, PREC_OR},
         [TOKEN_PRINT] = {NULL, NULL, PREC_NONE},
         [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
         [TOKEN_SUPER] = {NULL, NULL, PREC_NONE},
@@ -259,6 +253,17 @@ static void number(bool canAssign) {
     emitConstant(NUMBER_VAL(value));
 }
 
+static void or_(bool canAssign) {
+    int elseJump = emitJump(OP_JUMP_IF_FALSE);
+    int endJump = emitJump(OP_JUMP);
+
+    patchJump(elseJump);
+    emitByte(OP_POP);
+
+    parsePrecedence(PREC_OR);
+    patchJump(endJump);
+}
+
 static void string(bool canAssign) {
     emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length - 2)));
 }
@@ -402,6 +407,15 @@ static void defineVariable(uint8_t global) {
     }
 
     emitBytes(OP_DEFINE_GLOBAL, global);
+}
+
+static void and_(bool canAssign) {
+    int endJump = emitJump(OP_JUMP_IF_FALSE);
+
+    emitByte(OP_POP);
+    parsePrecedence(PREC_AND);
+
+    patchJump(endJump);
 }
 
 static void unary(bool canAssign) {
