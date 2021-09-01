@@ -147,8 +147,8 @@ static InterpretResult run() {
                 if (IS_STRING(peek(0)) && IS_STRING(peek(1))) {
                     concatenate();
                 } else if (IS_NUMBER(peek(0)) && IS_NUMBER(peek(1))) {
-                    double b = AS_NUMBER(peek(0));
-                    double a = AS_NUMBER(peek(1));
+                    double b = AS_NUMBER(pop());
+                    double a = AS_NUMBER(pop());
                     push(NUMBER_VAL(a + b));
                 } else {
                     runtimeError("Operands must be two numbers or two strings.");
@@ -215,6 +215,11 @@ static InterpretResult run() {
             case OP_JUMP: {
                 uint16_t offset = READ_SHORT();
                 vm.ip += offset;
+                break;
+            }
+            case OP_LOOP: {
+                uint16_t offset = READ_SHORT();
+                vm.ip -= offset;
                 break;
             }
             case OP_RETURN:
