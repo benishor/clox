@@ -107,6 +107,8 @@ uint32_t disassembleInstruction(Chunk *chunk, uint32_t offset) {
             return jumpInstruction("OP_LOOP", -1, chunk, offset);
         case OP_RETURN:
             return simpleInstruction("OP_RETURN", offset);
+        case OP_CALL:
+            return byteInstruction("OP_CALL", chunk, offset);
         default:
             printf("Unknown opcode %d\n", instruction);
             return offset + 1;
