@@ -20,6 +20,15 @@ static Value clockNative(int argCount, Value *args) {
     return NUMBER_VAL((double) clock() / CLOCKS_PER_SEC);
 }
 
+double fib(double n) {
+    if (n < 2) return n;
+    return fib(n - 2) + fib(n - 1);
+}
+
+static Value fibonacciNative(int argCount, Value *args) {
+    return NUMBER_VAL(fib(AS_NUMBER(args[0])));
+}
+
 static void resetStack() {
     vm.stackTop = vm.stack;
     vm.frameCount = 0;
@@ -131,6 +140,7 @@ void initVM() {
     initTable(&vm.strings);
 
     defineNative("clock", clockNative);
+    defineNative("fibonacci", fibonacciNative);
 }
 
 void freeVM() {
